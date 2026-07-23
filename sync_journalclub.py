@@ -70,7 +70,10 @@ def write_bytes(path: Path, body: bytes, mode: int = 0o644) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)
-        path.chmod(mode)
+        try:
+            path.chmod(mode)
+        except OSError:
+            pass  # iCloud Drive rejects chmod on synced files; not critical
     finally:
         temporary.unlink(missing_ok=True)
 
